@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood Donors - HealthConnect</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo"><i class="fa-solid fa-heart-pulse"></i> HealthConnect</div>
+        <div class="nav-links" id="nav-links"></div>
+    </nav>
+    <div id="alert-box"></div>
+
+    <div class="page-container" id="main-content">
+        <div class="page-header">
+            <h2><i class="fa-solid fa-droplet" style="color:var(--accent)"></i> Blood Donors</h2>
+        </div>
+        
+        <div class="card" style="margin-bottom: 2rem;">
+            <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                <div class="form-group" style="margin-bottom: 0; flex: 1; min-width: 200px;">
+                    <input type="text" id="search-city" placeholder="Search by City">
+                </div>
+                <div class="form-group" style="margin-bottom: 0; flex: 1; min-width: 150px;">
+                    <select id="search-bg">
+                        <option value="">All Blood Groups</option>
+                        <option value="A+">A+</option>
+                        <option value="A-">A-</option>
+                        <option value="B+">B+</option>
+                        <option value="B-">B-</option>
+                        <option value="AB+">AB+</option>
+                        <option value="AB-">AB-</option>
+                        <option value="O+">O+</option>
+                        <option value="O-">O-</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" onclick="loadDonors()">Search</button>
+            </div>
+        </div>
+
+        <div class="card-grid" id="donors-list"></div>
+    </div>
+
+    <!-- Donor Setup Modal/Section for new donors -->
+    <div class="auth-container" id="donor-setup" style="display: none; padding-top: 2rem;">
+        <div class="auth-card">
+            <h2>Complete Donor Profile</h2>
+            <form id="setup-donor-form" onsubmit="setupDonor(event)">
+                <div class="form-group">
+                    <label>Blood Group</label>
+                    <select id="bg" required>
+                        <option value="A+">A+</option><option value="A-">A-</option>
+                        <option value="B+">B+</option><option value="B-">B-</option>
+                        <option value="AB+">AB+</option><option value="AB-">AB-</option>
+                        <option value="O+">O+</option><option value="O-">O-</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>City</label>
+                    <input type="text" id="setup-city" required>
+                </div>
+                <button class="btn btn-accent" type="submit">Complete Setup</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const mode = urlParams.get('mode');
+        const role = localStorage.getItem('role');
+
+        if(mode === 'setup' && role === 'donor') {
+            document.getElementById('main-content').style.display = 'none';
+            document.getElementById('donor-setup').style.display = 'flex';
+        } else {
+            loadDonors();
+        }
+
+        async function setupDonor(e) {
+            e.preventDefault();
+            try {
+                const bg = document.getElementById('bg').value;
+                const city = document.getElementById('setup-city').value;
+                await fetchAPI('/donors', {
+                    method: 'POST',
+                    body: JSON.stringify({ bloodGroup: bg, city })
+                });
+                window.location.href = 'dashboard.html';
+            } catch (err) {
+                showAlert(err.message, 'error', 'alert-box');
+            }
+        }
+
+        async function loadDonors() {
+            try {
+                const city = document.getElementById('search-city').value;
+                const bg = document.getElementById('search-bg').value;
+                let query = '?';
+                if(city) query += `city=${city}&`;
+                if(bg) query += `bloodGroup=${bg}`;
+                
+                const donors = await fetchAPI(`/donors${query}`);
+                
+                const container = document.getElementById('donors-list');
+                if(donors.length === 0) {
+                    container.innerHTML = '<p>No donors found matching criteria.</p>';
+                    return;
+                }
+                
+                container.innerHTML = donors.map(d => `
+                    <div class="card">
+                        <div style="display:flex; justify-content:space-between;">
+                            <h3>${d.userId.name}</h3>
+                            <span class="badge badge-danger">${d.bloodGroup}</span>
+                        </div>
+                        <p><i class="fa-solid fa-location-dot"></i> ${d.city}</p>
+                        <p><i class="fa-solid fa-phone"></i> ${d.userId.phone}</p>
+                        <p><i class="fa-solid fa-envelope"></i> ${d.userId.email}</p>
+                    </div>
+                `).join('');
+            } catch (err) {
+                showAlert(err.message, 'error', 'alert-box');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Healthcare Emergency System</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo"><i class="fa-solid fa-heart-pulse"></i> HealthConnect</div>
+        <div class="nav-links" id="nav-links">
+            <a href="login.html" class="btn btn-outline btn-sm">Login</a>
+            <a href="register.html" class="btn btn-primary btn-sm">Register</a>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <h1>Smart Healthcare & Emergency Management</h1>
+            <p>Your centralized platform for emergency blood donation, real-time hospital bed availability, and secure medical record management.</p>
+            <div class="hero-buttons">
+                <a href="register.html" class="btn btn-primary">Get Started <i class="fa-solid fa-arrow-right"></i></a>
+                <a href="emergency.html" class="btn btn-accent"><i class="fa-solid fa-truck-medical"></i> Emergency Request</a>
+            </div>
+            
+            <div class="card-grid" style="margin-top: 3rem; text-align: left;">
+                <div class="card">
+                    <h3><i class="fa-solid fa-droplet" style="color:var(--accent)"></i> Blood Donors</h3>
+                    <p>Find nearby blood donors in emergencies. Register to save a life.</p>
+                </div>
+                <div class="card">
+                    <h3><i class="fa-solid fa-bed-pulse" style="color:var(--primary)"></i> Hospital Beds</h3>
+                    <p>Track real-time ICU, oxygen, and general bed availability.</p>
+                </div>
+                <div class="card">
+                    <h3><i class="fa-solid fa-file-medical" style="color:var(--success)"></i> Medical Records</h3>
+                    <p>Securely store and access your prescriptions and reports.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Override checkAuth just for index.html
+        window.checkAuth = function() {}; 
+    </script>
+    <script src="js/api.js"></script>
+</body>
+</html>
